@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/Simplex"
+            android:title="Simplex" />
+        <item
+            android:id="@+id/Grafico"
+            android:title="Grafico" />
+    </group>
+
+    <item android:title="Transporte">
+        <menu>
+            <item
+                android:id="@+id/ESN"
+                android:title="Esquina superior noroeste" />
+        </menu>
+    </item>
+
+</menu>
