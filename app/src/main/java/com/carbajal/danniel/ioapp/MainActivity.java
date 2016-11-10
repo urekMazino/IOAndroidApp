@@ -1,6 +1,5 @@
 package com.carbajal.danniel.ioapp;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,14 +7,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
+import com.carbajal.danniel.ioapp.views.input.model.ModelInputFragment;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Entrada.OnFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, ModelInputFragment.onCaptureModelListener{
 
     Toolbar toolbar;
-
+    FuncionObjetivo funcionObjetivo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +33,13 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationViewRight = (NavigationView) findViewById(R.id.nav_view_right);
+
+        int width = (int)(getResources().getDisplayMetrics().widthPixels * .8);
+        DrawerLayout.LayoutParams params = (android.support.v4.widget.DrawerLayout.LayoutParams) navigationViewRight.getLayoutParams();
+        params.width = width;
+        navigationViewRight.setLayoutParams(params);
+
         navigationView.setNavigationItemSelectedListener(this);
 
     }
@@ -75,9 +85,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.Simplex){
             toolbar.setTitle("Simplex");
 
-            Entrada entrada = new Entrada();
+            ModelInputFragment modelInputFragment = new ModelInputFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container,entrada);
+            fragmentTransaction.replace(R.id.fragment_container, modelInputFragment);
             fragmentTransaction.commit();
         } else if (id == R.id.Grafico) {
 
@@ -90,8 +100,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
 
+    @Override
+    public void onCaptureModel(FuncionObjetivo funcionObjetivo) {
+        this.funcionObjetivo = funcionObjetivo;
+        Log.v("funcion objetivo",funcionObjetivo.getVariablesRestriccion().toString());
     }
 }

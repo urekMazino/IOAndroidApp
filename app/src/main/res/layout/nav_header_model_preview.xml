@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:maxLines="1"
         android:gravity="center_vertical"
-        android:text="Programacion Lineal"
+        android:text="Modelo"
         android:textSize="16sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 

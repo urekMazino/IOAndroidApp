@@ -1,4 +1,4 @@
-package com.carbajal.danniel.ioapp;
+package com.carbajal.danniel.ioapp.views.customViews;
 
 import android.annotation.TargetApi;
 import android.content.Context;

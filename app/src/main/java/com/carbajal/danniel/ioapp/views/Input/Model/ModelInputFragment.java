@@ -1,23 +1,17 @@
-package com.carbajal.danniel.ioapp;
+package com.carbajal.danniel.ioapp.views.input.model;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link Entrada.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link Entrada#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class Entrada extends Fragment {
+public class ModelInputFragment extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -27,11 +21,11 @@ public class Entrada extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private onCaptureModelListener mListener;
 
-    private VariableDecisionCampo things;
+    private ModelInputView modelInputView;
 
-    public Entrada() {
+    public ModelInputFragment() {
         // Required empty public constructor
     }
 
@@ -41,11 +35,11 @@ public class Entrada extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment Entrada.
+     * @return A new instance of fragment ModelInputFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static Entrada newInstance(String param1, String param2) {
-        Entrada fragment = new Entrada();
+    public static ModelInputFragment newInstance(String param1, String param2) {
+        ModelInputFragment fragment = new ModelInputFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -67,31 +61,41 @@ public class Entrada extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        if (things != null) {
-            View view= this.getView();
-            View cont = view.findViewById(R.id.fragment_modelo);
-             cont = things;
+        FrameLayout root = new FrameLayout(getActivity());
 
+        if (savedInstanceState != null) {
+            modelInputView = new ModelInputView(getActivity(),savedInstanceState.getStringArray("coeficients"));
+            root.addView(modelInputView);
+        } else {
+            modelInputView = new ModelInputView(getActivity());
+            root.addView(modelInputView);
         }
-        return inflater.inflate(R.layout.fragment_entrada, container, false);
+        modelInputView.getCaptureButton().setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                try{
+                    FuncionObjetivo funcionObjetivo = new FuncionObjetivo(modelInputView.getCoeficientsValues());
+                    mListener.onCaptureModel(funcionObjetivo);
+                } catch (Exception e){
 
+                }
+
+            }
+        });
+        return root;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof onCaptureModelListener) {
+            mListener = (onCaptureModelListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -103,22 +107,11 @@ public class Entrada extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        things = (VariableDecisionCampo)this.getView().findViewById(R.id.fragment_modelo);
+        outState.putStringArray("coeficients",modelInputView.getCoeficients());
 
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public interface onCaptureModelListener{
+        public void onCaptureModel(FuncionObjetivo funcionObjetivo);
     }
 }
