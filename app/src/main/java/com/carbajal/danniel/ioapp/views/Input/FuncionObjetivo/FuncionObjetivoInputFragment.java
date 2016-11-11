@@ -1,4 +1,4 @@
-package com.carbajal.danniel.ioapp.views.input.model;
+package com.carbajal.danniel.ioapp.views.input.funcionObjetivo;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
 
 
-public class ModelInputFragment extends Fragment{
+public class FuncionObjetivoInputFragment extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -23,9 +23,9 @@ public class ModelInputFragment extends Fragment{
 
     private onCaptureModelListener mListener;
 
-    private ModelInputView modelInputView;
+    private FuncionObjetivoInputView funcionObjetivoInputView;
 
-    public ModelInputFragment() {
+    public FuncionObjetivoInputFragment() {
         // Required empty public constructor
     }
 
@@ -35,11 +35,11 @@ public class ModelInputFragment extends Fragment{
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ModelInputFragment.
+     * @return A new instance of fragment FuncionObjetivoInputFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ModelInputFragment newInstance(String param1, String param2) {
-        ModelInputFragment fragment = new ModelInputFragment();
+    public static FuncionObjetivoInputFragment newInstance(String param1, String param2) {
+        FuncionObjetivoInputFragment fragment = new FuncionObjetivoInputFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,19 +64,19 @@ public class ModelInputFragment extends Fragment{
         FrameLayout root = new FrameLayout(getActivity());
 
         if (savedInstanceState != null) {
-            modelInputView = new ModelInputView(getActivity(),savedInstanceState.getStringArray("coeficients"));
-            root.addView(modelInputView);
+            funcionObjetivoInputView = new FuncionObjetivoInputView(getActivity(),savedInstanceState.getStringArray("coeficients"));
+            root.addView(funcionObjetivoInputView);
         } else {
-            modelInputView = new ModelInputView(getActivity());
-            root.addView(modelInputView);
+            funcionObjetivoInputView = new FuncionObjetivoInputView(getActivity());
+            root.addView(funcionObjetivoInputView);
         }
-        modelInputView.getCaptureButton().setOnClickListener(new View.OnClickListener()
+        funcionObjetivoInputView.getCaptureButton().setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
                 try{
-                    FuncionObjetivo funcionObjetivo = new FuncionObjetivo(modelInputView.getCoeficientsValues());
-                    mListener.onCaptureModel(funcionObjetivo);
+                    FuncionObjetivo funcionObjetivoa = new FuncionObjetivo(funcionObjetivoInputView.getCoeficientsValues());
+                    mListener.onCaptureModel(funcionObjetivoa);
                 } catch (Exception e){
 
                 }
@@ -85,8 +85,6 @@ public class ModelInputFragment extends Fragment{
         });
         return root;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
 
     @Override
     public void onAttach(Context context) {
@@ -107,11 +105,10 @@ public class ModelInputFragment extends Fragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArray("coeficients",modelInputView.getCoeficients());
-
+        outState.putStringArray("coeficients", funcionObjetivoInputView.getCoeficients());
     }
 
     public interface onCaptureModelListener{
-        public void onCaptureModel(FuncionObjetivo funcionObjetivo);
+        void onCaptureModel(FuncionObjetivo funcionObjetivoa);
     }
 }

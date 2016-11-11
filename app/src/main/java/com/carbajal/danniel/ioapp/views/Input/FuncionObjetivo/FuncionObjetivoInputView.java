@@ -1,4 +1,4 @@
-package com.carbajal.danniel.ioapp.views.input.model;
+package com.carbajal.danniel.ioapp.views.input.funcionObjetivo;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,9 +19,11 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.carbajal.danniel.ioapp.R;
-import com.carbajal.danniel.ioapp.StringManipulation;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.CustomNumField;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.VariableDecisionCampo;
+import com.carbajal.danniel.ioapp.views.support.StringManipulation;
+
+import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
 
@@ -29,31 +31,33 @@ import java.util.ArrayList;
  * Created by daniel on 11/3/16.
  */
 
-public class ModelInputView extends ScrollView{
+public class FuncionObjetivoInputView extends ScrollView {
 
     private LinearLayout innerContainer;
     private ArrayList<VariableDecisionCampo> containers = new ArrayList<VariableDecisionCampo>();
+    private FlowLayout flowLayout;
+
     private ToggleButton maxMinToggle;
     private TextView modelPreview;
     private Button captureButton;
 
-    public ModelInputView(Context context) {
+    public FuncionObjetivoInputView(Context context) {
         super(context);
         init();
 
     }
 
-    public ModelInputView(Context context,String[] coeficients) {
+    public FuncionObjetivoInputView(Context context, String[] coeficients) {
         super(context);
         init(coeficients);
     }
 
-    public ModelInputView(Context context, AttributeSet attrs) {
+    public FuncionObjetivoInputView(Context context, AttributeSet attrs) {
         super(context,attrs);
         init();
     }
 
-    public ModelInputView(Context context, AttributeSet attrs, int defStyle) {
+    public FuncionObjetivoInputView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -88,6 +92,10 @@ public class ModelInputView extends ScrollView{
         this.innerContainer.addView(modelPreview);
 
 
+        flowLayout = new FlowLayout(getContext());
+        flowLayout.setOrientation(FlowLayout.HORIZONTAL);
+        this.innerContainer.addView(flowLayout);
+
         captureButton = new Button(this.getContext());
         captureButton.setText("Siguiente");
         this.innerContainer.addView(captureButton);
@@ -105,26 +113,30 @@ public class ModelInputView extends ScrollView{
     }
 
     private void addField(String coeficient){
-        final VariableDecisionCampo variableDecisionCampo = new VariableDecisionCampo(this.getContext(),containers.size()+1,coeficient);
-        containers.add(variableDecisionCampo);
-        createNumFieldListener(variableDecisionCampo.getNumField());
+        VariableDecisionCampo variableDecisionCampo = new VariableDecisionCampo(this.getContext(),containers.size()+1,coeficient);
+        final CustomNumField numField = variableDecisionCampo.getNumField();
+        createNumFieldListener(numField);
         createEliminateButtonListener(variableDecisionCampo);
-        this.innerContainer.addView(variableDecisionCampo,this.innerContainer.getChildCount()-1);
-        variableDecisionCampo.getNumField().parseValue(containers.size());
 
-        updateModelPreview();
+        containers.add(variableDecisionCampo);
+        flowLayout.addView(variableDecisionCampo,flowLayout.getChildCount());
 
+        variableDecisionCampo.updateVariableString();
+        updateFuncionPreview();
+
+        adjustScroll(numField);
+
+    }
+    private void adjustScroll(final CustomNumField numField){
         post(new Runnable() {
             @Override
             public void run() {
-
                 fullScroll(View.FOCUS_DOWN);
-                variableDecisionCampo.getNumField().requestFocus();
-                variableDecisionCampo.getNumField().selectAll();
+                numField.requestFocus();
+                numField.selectAll();
 
             }
         });
-
     }
 
     private void createNumFieldListener(final CustomNumField numField){
@@ -143,7 +155,9 @@ public class ModelInputView extends ScrollView{
         numField.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                updateFuncionPreview();
+            }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start,
@@ -151,15 +165,7 @@ public class ModelInputView extends ScrollView{
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-                try{
-                    numField.getValue();
-                    numField.parseValue(containers.size()-1);
-                    updateModelPreview();
-                } catch (Exception e){
-
-                }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
     }
@@ -171,7 +177,6 @@ public class ModelInputView extends ScrollView{
                 try{
                     removeField(variableDecisionCampo);
                 }catch (Exception e){
-                    Log.v("WTF",e.getLocalizedMessage());
                 }
             }
         });
@@ -181,13 +186,13 @@ public class ModelInputView extends ScrollView{
         if (containers.size()>1) {
             removeContainer(v);
             adjustNames();
-            updateModelPreview();
+            remakeFuncionPreview();
         } else {
             throw new Exception(getResources().getString(R.string.variables_minimas));
         }
     }
     private void removeContainer(VariableDecisionCampo v){
-        this.innerContainer.removeView(v);
+        this.flowLayout.removeView(v);
         int index = containers.indexOf(v);
         containers.remove(index);
     }
@@ -196,7 +201,8 @@ public class ModelInputView extends ScrollView{
         int i=1;
         for (VariableDecisionCampo x: containers){
             String index = StringManipulation.subscript(i);
-            x.setTextView(getResources().getString(R.string.variable_decision_simbolo)+index+" +");
+            x.adjustName(i);
+            x.setIndex(i);
             i++;
         }
     }
@@ -219,15 +225,22 @@ public class ModelInputView extends ScrollView{
         return coeficientsVariables;
     }
 
-    private void updateModelPreview() {
+    private void updateFuncionPreview() {
         String modelPreviewStr = "Z =";
-        int i = 1;
         for (VariableDecisionCampo x : containers) {
-            modelPreviewStr += x.getNumField().getParsedValue();
-            i++;
+            modelPreviewStr += x.getVariableString();
         }
         modelPreview.setText(modelPreviewStr);
     }
+    private void remakeFuncionPreview(){
+        String funcionPreviewStr = "Z =";
+        for (VariableDecisionCampo x : containers) {
+            x.updateVariableString();
+            funcionPreviewStr += x.getVariableString();
+        }
+        modelPreview.setText(funcionPreviewStr);
+    }
+
 
     private void setLayoutParams(){
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
@@ -246,6 +259,5 @@ public class ModelInputView extends ScrollView{
 
         this.setLayoutParams(layoutParams);
     }
-
 
 }

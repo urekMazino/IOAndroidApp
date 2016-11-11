@@ -6,11 +6,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.EditText;
 
-import com.carbajal.danniel.ioapp.R;
-import com.carbajal.danniel.ioapp.StringManipulation;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import com.carbajal.danniel.ioapp.views.support.StringManipulation;
 
 /**
  * Created by daniel on 11/9/16.
@@ -45,21 +41,8 @@ public class CustomNumField extends EditText {
     public String parseValue(int i) {
         i = Math.max(i,1);
         double value = Double.parseDouble(getText().toString());
-        NumberFormat nf = new DecimalFormat("##.###");
-        String index = StringManipulation.subscript(i);
-        String variable = nf.format(Math.abs(value)) + getResources().getString(R.string.variable_decision_simbolo) + index;
-        ;
-        if (Math.abs(value) == 1) {
-            variable = " " + (value > 0 ? "+" : "-") + " " + getResources().getString(R.string.variable_decision_simbolo) + index;
-        } else if (value >= 0) {
-
-            variable = " + " + variable;
-
-        } else {
-            variable = " - " + variable;
-        }
-        parsedValue = variable;
-        return variable;
+        parsedValue = StringManipulation.coeficientToVariable(value,i);
+        return parsedValue;
     }
     public String getParsedValue(){
         return parsedValue;

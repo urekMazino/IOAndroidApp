@@ -12,13 +12,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
-import com.carbajal.danniel.ioapp.views.input.model.ModelInputFragment;
+import com.carbajal.danniel.ioapp.views.input.funcionObjetivo.FuncionObjetivoInputFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ModelInputFragment.onCaptureModelListener{
+        implements NavigationView.OnNavigationItemSelectedListener, FuncionObjetivoInputFragment.onCaptureModelListener{
 
     Toolbar toolbar;
-    FuncionObjetivo funcionObjetivo;
+    FuncionObjetivo funcionObjetivoa;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -85,9 +85,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.Simplex){
             toolbar.setTitle("Simplex");
 
-            ModelInputFragment modelInputFragment = new ModelInputFragment();
+            FuncionObjetivoInputFragment funcionObjetivoInputFragment = new FuncionObjetivoInputFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, modelInputFragment);
+            fragmentTransaction.replace(R.id.fragment_container, funcionObjetivoInputFragment);
             fragmentTransaction.commit();
         } else if (id == R.id.Grafico) {
 
@@ -102,8 +102,8 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    public void onCaptureModel(FuncionObjetivo funcionObjetivo) {
-        this.funcionObjetivo = funcionObjetivo;
-        Log.v("funcion objetivo",funcionObjetivo.getVariablesRestriccion().toString());
+    public void onCaptureModel(FuncionObjetivo funcionObjetivoa) {
+        this.funcionObjetivoa = funcionObjetivoa;
+        Log.v("funcion objetivo", funcionObjetivoa.getVariablesRestriccion().toString());
     }
 }
