@@ -1,4 +1,4 @@
-package com.carbajal.danniel.ioapp;
+package com.carbajal.danniel.ioapp.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,14 +11,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.carbajal.danniel.ioapp.R;
+import com.carbajal.danniel.ioapp.fragments.ObjectiveFunctionInputFragment;
+import com.carbajal.danniel.ioapp.fragments.RestrictionsInputFragment;
 import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
-import com.carbajal.danniel.ioapp.views.input.funcionObjetivo.FuncionObjetivoInputFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FuncionObjetivoInputFragment.onCaptureModelListener{
+        implements NavigationView.OnNavigationItemSelectedListener, ObjectiveFunctionInputFragment.onCaptureModelListener,
+        RestrictionsInputFragment.onCaptureModelListener {
 
-    Toolbar toolbar;
-    FuncionObjetivo funcionObjetivoa;
+    private Toolbar toolbar;
+    FuncionObjetivo funcionObjetivo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,23 +30,24 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initDrawer();
+
+        initNavigations();
+
+    }
+    private  void initDrawer(){
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        NavigationView navigationViewRight = (NavigationView) findViewById(R.id.nav_view_right);
-
-        int width = (int)(getResources().getDisplayMetrics().widthPixels * .8);
-        DrawerLayout.LayoutParams params = (android.support.v4.widget.DrawerLayout.LayoutParams) navigationViewRight.getLayoutParams();
-        params.width = width;
-        navigationViewRight.setLayoutParams(params);
-
-        navigationView.setNavigationItemSelectedListener(this);
-
     }
+
+    private void initNavigations(){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -85,11 +89,12 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.Simplex){
             toolbar.setTitle("Simplex");
 
-            FuncionObjetivoInputFragment funcionObjetivoInputFragment = new FuncionObjetivoInputFragment();
+            ObjectiveFunctionInputFragment funcionObjetivoInputFragment = new ObjectiveFunctionInputFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container, funcionObjetivoInputFragment);
             fragmentTransaction.commit();
         } else if (id == R.id.Grafico) {
+
 
         } else if (id == R.id.ESN) {
 
@@ -103,7 +108,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCaptureModel(FuncionObjetivo funcionObjetivoa) {
-        this.funcionObjetivoa = funcionObjetivoa;
+        this.funcionObjetivo = funcionObjetivoa;
         Log.v("funcion objetivo", funcionObjetivoa.getVariablesRestriccion().toString());
     }
+
+
 }

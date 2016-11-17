@@ -27,7 +27,6 @@ public class CircularTextView extends TextView
 
     @Override
     public void draw(Canvas canvas) {
-
         Paint circlePaint = new Paint();
         circlePaint.setColor(solidColor);
         circlePaint.setFlags(Paint.ANTI_ALIAS_FLAG);

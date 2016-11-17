@@ -1,6 +1,6 @@
 package com.carbajal.danniel.ioapp.models.programacionlineal;
 
-import com.carbajal.danniel.ioapp.views.support.StringManipulation;
+import com.carbajal.danniel.ioapp.support.StringManipulation;
 
 import java.util.ArrayList;
 

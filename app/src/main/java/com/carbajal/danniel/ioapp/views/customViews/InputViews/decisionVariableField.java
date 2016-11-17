@@ -11,36 +11,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.carbajal.danniel.ioapp.R;
+import com.carbajal.danniel.ioapp.support.BindableString;
 import com.carbajal.danniel.ioapp.views.customViews.CircularTextView;
-import com.carbajal.danniel.ioapp.views.support.StringManipulation;
+import com.carbajal.danniel.ioapp.support.StringManipulation;
 
-import org.apmem.tools.layouts.FlowLayout;
 
 /**
  * Created by daniel on 11/6/16.
  */
 
-public class VariableDecisionCampo extends LinearLayout{
-
-
-
+public class DecisionVariableField extends LinearLayout{
 
     private int index;
-    private String variableString;
+    private BindableString variableString = new BindableString();
 
     private CustomNumField numField;
     private TextView textView;
     private CircularTextView eliminateButton;
 
-    public VariableDecisionCampo(Context context,int index) {
+    public DecisionVariableField(Context context, int index) {
         super(context);
         //this.setBaselineAligned(false);
-        FlowLayout.LayoutParams layoutParams= new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT,FlowLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.topMargin = 16;
-        layoutParams.rightMargin = 32;
-        this.setLayoutParams(layoutParams);
-
-        this.setOrientation(HORIZONTAL);
+        DecisionVariableField.initLinearLayout(this);
         this.index = index;
 
         numField = createNumField();
@@ -54,13 +46,19 @@ public class VariableDecisionCampo extends LinearLayout{
 
         adjustName(index);
     }
-    public VariableDecisionCampo(Context context,int index,String coeficient){
+
+    public DecisionVariableField(Context context, int index, String coeficient){
         this(context,index);
         numField.setText(coeficient);
     }
 
+
+
     private CustomNumField createNumField(){
         CustomNumField numField = new CustomNumField(this.getContext());
+        numField.setMaxWidth(getResources().getDimensionPixelSize(R.dimen.number_field_max_width));
+        numField.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.number_field_min_width));
+
         setNumFieldListener(numField);
         numField.requestFocus();
 
@@ -70,7 +68,8 @@ public class VariableDecisionCampo extends LinearLayout{
         numField.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start,
@@ -85,9 +84,9 @@ public class VariableDecisionCampo extends LinearLayout{
     }
     public void updateVariableString(){
         try{
-            variableString = StringManipulation.coeficientToVariable(numField.getValue(),index);
+            variableString.setValue(StringManipulation.coeficientToVariable(numField.getValue(),index));
         } catch (Exception e){
-            variableString = "";
+            variableString.setValue("");
         }
     }
     private TextView createTextView(int index){
@@ -97,16 +96,16 @@ public class VariableDecisionCampo extends LinearLayout{
         return textView;
     }
     public void adjustName(int index){
-        setTextView(getResources().getString(R.string.variable_decision_simbolo)+StringManipulation.subscript(index));
+        setTextView(getResources().getString(R.string.decision_variable_symbol)+StringManipulation.subscript(index));
     }
     private CircularTextView createEliminateButton(){
         final LayoutParams lparams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
         lparams.gravity=Gravity.CENTER;
-        lparams.leftMargin = 8;
+        lparams.leftMargin = 16;
         CircularTextView eliminateButton = new CircularTextView(this.getContext());
         eliminateButton.setText(getResources().getString(R.string.clear_icon));
         eliminateButton.setTextSize(TypedValue.COMPLEX_UNIT_SP,28);
-        eliminateButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        eliminateButton.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
         eliminateButton.setLayoutParams(lparams);
         eliminateButton.setGravity(Gravity.CENTER);
         eliminateButton.setSolidColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
@@ -123,15 +122,34 @@ public class VariableDecisionCampo extends LinearLayout{
         textView.setText(str);
     }
 
+    public void removeEliminateButton(){
+        removeView(eliminateButton);
+    }
     public TextView getEliminateButton() {
         return eliminateButton;
     }
 
 
-    public String getVariableString() {
+    public String getVariableStringValue() {
+        return variableString.getValue();
+    }
+    public BindableString getVariableString(){
         return variableString;
     }
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public static void initLinearLayout(LinearLayout linearLayout){
+        LinearLayout.LayoutParams layoutParams= new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.topMargin = 16;
+        layoutParams.rightMargin = 48;
+        linearLayout.setPadding(0,0,48,0);
+        linearLayout.setLayoutParams(layoutParams);
+        linearLayout.setOrientation(HORIZONTAL);
     }
 }

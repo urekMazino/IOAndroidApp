@@ -2,12 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.carbajal.danniel.ioapp.views.input.funcionObjetivo.FuncionObjetivoInputFragment">\
-    <org.apmem.tools.layouts.FlowLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        >
-    </org.apmem.tools.layouts.FlowLayout>
+    tools:context="com.carbajal.danniel.ioapp.fragments.ObjectiveFunctionInputFragment">
+
+    <com.carbajal.danniel.ioapp.views.input.funcionObjetivo.ObjectiveFunctionInputView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+    </com.carbajal.danniel.ioapp.views.input.funcionObjetivo.ObjectiveFunctionInputView>
 
 </FrameLayout>

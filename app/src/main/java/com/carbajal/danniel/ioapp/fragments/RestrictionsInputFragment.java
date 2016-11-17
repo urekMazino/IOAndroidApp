@@ -1,4 +1,4 @@
-package com.carbajal.danniel.ioapp.views.input.funcionObjetivo;
+package com.carbajal.danniel.ioapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,40 +9,27 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
+import com.carbajal.danniel.ioapp.views.input.restrictions.RestrictionsInputView;
 
 
-public class FuncionObjetivoInputFragment extends Fragment{
-    // TODO: Rename parameter arguments, choose names that match
+public class RestrictionsInputFragment extends Fragment{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "index";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private int index;
 
     private onCaptureModelListener mListener;
+    private RestrictionsInputView restrictionsInputView;
 
-    private FuncionObjetivoInputView funcionObjetivoInputView;
-
-    public FuncionObjetivoInputFragment() {
+    public RestrictionsInputFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FuncionObjetivoInputFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FuncionObjetivoInputFragment newInstance(String param1, String param2) {
-        FuncionObjetivoInputFragment fragment = new FuncionObjetivoInputFragment();
+
+    public static RestrictionsInputFragment newInstance(int index) {
+        RestrictionsInputFragment fragment = new RestrictionsInputFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_PARAM1, index);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,8 +39,7 @@ public class FuncionObjetivoInputFragment extends Fragment{
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            index = getArguments().getInt(ARG_PARAM1);
         }
     }
 
@@ -62,21 +48,20 @@ public class FuncionObjetivoInputFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         FrameLayout root = new FrameLayout(getActivity());
-
         if (savedInstanceState != null) {
-            funcionObjetivoInputView = new FuncionObjetivoInputView(getActivity(),savedInstanceState.getStringArray("coeficients"));
-            root.addView(funcionObjetivoInputView);
+            restrictionsInputView = new RestrictionsInputView(getActivity(),index,savedInstanceState.getStringArray("coeficients"));
+            root.addView(restrictionsInputView);
         } else {
-            funcionObjetivoInputView = new FuncionObjetivoInputView(getActivity());
-            root.addView(funcionObjetivoInputView);
+            restrictionsInputView = new RestrictionsInputView(getActivity(),index);
+            root.addView(restrictionsInputView);
         }
-        funcionObjetivoInputView.getCaptureButton().setOnClickListener(new View.OnClickListener()
+        restrictionsInputView.getCaptureButton().setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
                 try{
-                    FuncionObjetivo funcionObjetivoa = new FuncionObjetivo(funcionObjetivoInputView.getCoeficientsValues());
-                    mListener.onCaptureModel(funcionObjetivoa);
+                    //FuncionObjetivo funcionObjetivoa = new FuncionObjetivo(restrictionsInputView.getCoeficientsValues());
+                    //mListener.onCaptureModel(funcionObjetivoa);
                 } catch (Exception e){
 
                 }
@@ -105,7 +90,7 @@ public class FuncionObjetivoInputFragment extends Fragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArray("coeficients", funcionObjetivoInputView.getCoeficients());
+        outState.putStringArray("coeficients", restrictionsInputView.getCoeficients());
     }
 
     public interface onCaptureModelListener{

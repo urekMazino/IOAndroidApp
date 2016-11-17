@@ -1,4 +1,4 @@
-package com.carbajal.danniel.ioapp.views.support;
+package com.carbajal.danniel.ioapp.support;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -27,21 +27,24 @@ public abstract class StringManipulation {
 
     public static String coeficientToVariable(double coeficient, int i){
         i = Math.max(i,1);
-        NumberFormat nf = new DecimalFormat("##.###");
         String index = StringManipulation.subscript(i);
-        String resultingString = nf.format(Math.abs(coeficient)) + "x" + index;
+        String resultingString = DoubleToString(Math.abs(coeficient)) + "x" + index;
 
         if (Math.abs(coeficient) == 1) {
-            resultingString = " " + (coeficient > 0 ? "+" : "-") + "x" + index;
+            resultingString = (coeficient > 0 ? ((i!=1)?" + ":""): " - " ) + "x" + index;
         } else if (coeficient >= 0) {
 
-            resultingString = " + " + resultingString;
+            resultingString = ((i!=1)?" + ":"") + resultingString;
 
         } else {
             resultingString = " - " + resultingString;
         }
         return resultingString;
         
+    }
+    public static  String DoubleToString(double value){
+        NumberFormat nf = new DecimalFormat("##.###");
+        return nf.format(value);
     }
     
 }
