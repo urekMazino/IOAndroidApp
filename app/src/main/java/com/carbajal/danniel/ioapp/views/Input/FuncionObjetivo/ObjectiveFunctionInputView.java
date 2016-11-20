@@ -2,7 +2,9 @@ package com.carbajal.danniel.ioapp.views.input.funcionObjetivo;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.inputmethod.InputMethodManager;
 
+import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
 import com.carbajal.danniel.ioapp.support.BindableString;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.DecisionVariableField;
 import com.carbajal.danniel.ioapp.views.input.InputView;
@@ -46,6 +48,8 @@ public class ObjectiveFunctionInputView extends InputView implements VariableInp
 
     private void init(){
         String[] coeficients = {"1"};
+        ((InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
         init(coeficients);
     }
 
@@ -77,9 +81,8 @@ public class ObjectiveFunctionInputView extends InputView implements VariableInp
         }
         return coeficentsVariables;
     }
-
-    public int getRestrictionCount(){
-        return listeners.size();
+    public int getVariableCount(){
+        return variableInputView.getDecisionVariableFields().size();
     }
 
     @Override
@@ -92,6 +95,11 @@ public class ObjectiveFunctionInputView extends InputView implements VariableInp
     public void removedField(int index) {
         notifyVariableRemoved(index);
         objectiveFunctionPreview.removeTextView(index);
+    }
+
+    @Override
+    public void finishInputs() {
+        variableInputView.addField();
     }
 
     public void addListener(ObjectiveFunctionChange objectiveFunctionChange){
@@ -108,6 +116,12 @@ public class ObjectiveFunctionInputView extends InputView implements VariableInp
         for (ObjectiveFunctionChange lister: listeners){
             lister.variableRemoved(index);
         }
+    }
+    public FuncionObjetivo buildObjectiveFunction() throws Exception{
+        return new FuncionObjetivo(getObjectiveFunctionPreview().getMinMaxBoolean(),getCoeficientsValues());
+    }
+    public ObjectiveFunctionPreview getObjectiveFunctionPreview(){
+        return objectiveFunctionPreview;
     }
     public interface ObjectiveFunctionChange{
         void variableAdded();

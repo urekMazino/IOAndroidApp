@@ -12,8 +12,8 @@ import android.widget.TextView;
 import com.carbajal.danniel.ioapp.R;
 import com.carbajal.danniel.ioapp.support.BindableString;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.CustomNumField;
-import com.carbajal.danniel.ioapp.views.customViews.InputViews.FlowLayout;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.DecisionVariableField;
+import com.carbajal.danniel.ioapp.views.customViews.InputViews.FlowLayout;
 
 import java.util.ArrayList;
 
@@ -82,12 +82,12 @@ public class VariableInputView extends FlowLayout{
     }
 
     private void createNumFieldListener(final CustomNumField numField){
+
         numField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ( (actionId == EditorInfo.IME_ACTION_DONE && canAddVariables) ){
-                    numField.clearFocus();
-                    addField();
+                if ((actionId == EditorInfo.IME_ACTION_DONE) ){
+                    notifyFinish();
                     return true;
                 } else {
                     return false;
@@ -111,7 +111,6 @@ public class VariableInputView extends FlowLayout{
     }
 
     public void removeField(DecisionVariableField v) throws Exception{
-        Log.v("index"+decisionVariableFields.indexOf(v),decisionVariableFields.size()+"size");
 
         if (decisionVariableFields.size()>1) {
             notifyFieldRemoved(v.getIndex());
@@ -143,7 +142,6 @@ public class VariableInputView extends FlowLayout{
         }
     }
     private void removeContainer(DecisionVariableField v){
-        Log.v("",Boolean.toString(decisionVariableFields.contains(v)));
         this.removeView(v);
         decisionVariableFields.remove(v);
     }
@@ -154,10 +152,6 @@ public class VariableInputView extends FlowLayout{
 
     public void setListener(variableInputChange listener){
         this.listener = listener;
-    }
-
-    public void setCanAddVariables(boolean canAddVariables) {
-        this.canAddVariables = canAddVariables;
     }
 
     public void setCanRemoveVariables(boolean canRemoveVariables) {
@@ -174,6 +168,12 @@ public class VariableInputView extends FlowLayout{
             listener.removedField(index);
         }
     }
+    private void notifyFinish(){
+        if(listener != null){
+            Log.v("first level","confirmed");
+            listener.finishInputs();
+        }
+    }
     private void notifyFieldAdded(BindableString bindableString){
         if(listener != null){
             listener.addedField(bindableString);
@@ -187,5 +187,6 @@ public class VariableInputView extends FlowLayout{
     public interface variableInputChange {
         void addedField(BindableString bindableString);
         void removedField(int index);
+        void finishInputs();
     }
 }

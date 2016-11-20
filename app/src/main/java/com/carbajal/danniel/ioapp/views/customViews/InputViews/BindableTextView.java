@@ -31,4 +31,5 @@ public class BindableTextView extends TextView implements BindableString.bindabl
     public void changed(String newValue) {
         this.setText(newValue);
     }
+
 }

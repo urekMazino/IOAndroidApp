@@ -1,7 +1,9 @@
-package com.carbajal.danniel.ioapp.models.programacionlineal.simplex;
-import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
-import com.carbajal.danniel.ioapp.models.programacionlineal.Restriccion;
-import com.carbajal.danniel.ioapp.models.programacionlineal.TiposIgualdades;
+package com.example.programacionlineal.simplex;
+
+
+import com.example.programacionlineal.FuncionObjetivo;
+import com.example.programacionlineal.Restriccion;
+import com.example.programacionlineal.TiposIgualdades;
 
 import java.util.ArrayList;
 
@@ -28,7 +30,7 @@ TablaSimplexBuilder {
 		
 	}
 	
-	private static void renglonesRestricciones(ArrayList<Restriccion> restricciones,double[][] tablaSimplex){		
+	private static void renglonesRestricciones(ArrayList<Restriccion> restricciones, double[][] tablaSimplex){
 		int numeroRestricciones = restricciones.size();
 		
 		for (int i=0;i<numeroRestricciones;i++){
@@ -37,8 +39,10 @@ TablaSimplexBuilder {
 		
 			for (int j=0;j<variablesRestriccion.size();j++){
 				tablaSimplex[1+i][j] = variablesRestriccion.get(j);
+				if (i==j){
+					tablaSimplex[1+i][j+variablesRestriccion.size()] = (restriccion.getIgualdad()== TiposIgualdades.MENOR_IGUAL)?1:-1;
+				}
 			}
-			tablaSimplex[1+i][i+variablesRestriccion.size()] = (restriccion.getIgualdad()== TiposIgualdades.MENOR_IGUAL)?1:-1;
 			tablaSimplex[1+i][variablesRestriccion.size()+numeroRestricciones]=restriccion.getExpresionNumerica();
 			
 		}

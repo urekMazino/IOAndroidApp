@@ -1,22 +1,23 @@
 package com.carbajal.danniel.ioapp.views.input.restrictions;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.carbajal.danniel.ioapp.R;
+import com.carbajal.danniel.ioapp.models.programacionlineal.Restriccion;
 import com.carbajal.danniel.ioapp.support.BindableString;
 import com.carbajal.danniel.ioapp.support.StringManipulation;
+import com.carbajal.danniel.ioapp.views.customViews.FontButtonBuilder;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.CustomNumField;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.DecisionVariableField;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.FlowLayout;
@@ -26,6 +27,7 @@ import com.carbajal.danniel.ioapp.views.input.VariableInputView;
 import com.carbajal.danniel.ioapp.views.input.funcionObjetivo.ObjectiveFunctionInputView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by daniel on 11/3/16.
@@ -37,10 +39,13 @@ public class RestrictionsInputView extends InputView implements VariableInputVie
 
     private VariableInputView variableInputView;
     private TextView closeRestrictionButton;
-    private Preview functionPreview;
+
+    private RestrictionPreview functionPreview;
     private BindableString bindableStringRHS = new BindableString();
     private CustomNumField numFieldRHS;
     private Spinner spinner;
+    private ArrayList<ButtonListener> listeners = new ArrayList<>();
+
 
     public RestrictionsInputView(Context context,int index) {
         super(context);
@@ -48,9 +53,9 @@ public class RestrictionsInputView extends InputView implements VariableInputVie
 
     }
 
-    public RestrictionsInputView(Context context,int index, String[] coeficients) {
+    public RestrictionsInputView(Context context,int index, int amountOfVariables) {
         super(context);
-        init(index,coeficients);
+        init(index,amountOfVariables);
     }
 
     public RestrictionsInputView(Context context,int index, AttributeSet attrs) {
@@ -65,22 +70,23 @@ public class RestrictionsInputView extends InputView implements VariableInputVie
 
     }
 
+
     private void init(int index){
-        String[] coeficients = {"1"};
-        init(index,coeficients);
+        init(index,1);
     }
 
-    private void init(int index,String[] coeficients){
+    private void init(int index,int amount){
         setTitle("Restriccion "+index);
+        String[] coeficients = new String[amount];
+        Arrays.fill(coeficients,"1");
 
         functionPreview = new RestrictionPreview(getContext());
         addContent(functionPreview);
         initCloseRestrictionButton();
         initSpinner();
-        functionPreview.addTextViewUntracked(bindableStringRHS);
+        functionPreview.addTextViewRHS(bindableStringRHS);
 
         variableInputView = new VariableInputView(getContext(),coeficients,this);
-        variableInputView.setCanAddVariables(false);
         variableInputView.setCanRemoveVariables(false);
         addContent(variableInputView);
 
@@ -116,22 +122,34 @@ public class RestrictionsInputView extends InputView implements VariableInputVie
                 updateBindableString();
             }
         });
+        numFieldRHS.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((actionId == EditorInfo.IME_ACTION_DONE) ){
+                    notifyFinish();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
     }
     public void changeTitleIndex(int index){
         setTitle("Restriccion "+index);
     }
     private void initCloseRestrictionButton(){
-        closeRestrictionButton = new TextView(getContext());
-        closeRestrictionButton.setText("delete");
-        closeRestrictionButton.setTextSize(TypedValue.COMPLEX_UNIT_SP,32);
-        closeRestrictionButton.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        closeRestrictionButton = FontButtonBuilder.BuildButton(getContext(),"delete",40);
 
-        Typeface typeFace=Typeface.createFromAsset(getContext().getAssets(),"fonts/MaterialIcons-Regular.ttf");
-        closeRestrictionButton.setTypeface(typeFace);
+        closeRestrictionButton.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                notifyClosedRestriction(RestrictionsInputView.this);
+            }
+        });
+
         titleContainer.addView(closeRestrictionButton);
-    }
-    public TextView getCloseRestrictionButton(){
-        return closeRestrictionButton;
+
     }
     private Spinner initSpinner(){
         spinner = new Spinner(this.getContext());
@@ -161,7 +179,17 @@ public class RestrictionsInputView extends InputView implements VariableInputVie
         }
         return coeficentsVariables;
     }
-
+    public Restriccion buildRestriccion() throws Exception{
+        Restriccion restriccion = new Restriccion(numFieldRHS.getValue(),getCoeficientsValues());
+        restriccion.setIgualdad(spinner.getSelectedItemPosition());
+        return restriccion;
+    }
+    public int getSpinnerItem(){
+        return spinner.getSelectedItemPosition();
+    }
+    public Preview getFunctionPreview() {
+        return functionPreview;
+    }
 
     @Override
     public void addedField(BindableString bindableString) {
@@ -173,6 +201,11 @@ public class RestrictionsInputView extends InputView implements VariableInputVie
         functionPreview.removeTextView(index);
     }
 
+    @Override
+    public void finishInputs() {
+        Log.v("ENTER 2 level","confirmed");
+        notifyFinish();
+    }
 
     @Override
     public void variableAdded() {
@@ -203,5 +236,25 @@ public class RestrictionsInputView extends InputView implements VariableInputVie
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+    public void addListener(ButtonListener newListener){
+        listeners.add(newListener);
+    }
+
+    private void notifyClosedRestriction(RestrictionsInputView restrictionsInputView){
+        for (ButtonListener listener: listeners){
+            listener.closedButtonClicked(restrictionsInputView);
+        }
+    }
+    private void notifyFinish(){
+        for (ButtonListener listener: listeners){
+            Log.v("second level","confirmed");
+            listener.finish();
+        }
+    }
+
+    public interface ButtonListener {
+        void closedButtonClicked(RestrictionsInputView restrictionsInputView);
+        void finish();
     }
 }

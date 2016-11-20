@@ -9,8 +9,10 @@
     <string name="minimum_variables_message">No se puede tener menos de 1 variable de decision</string>
     <string name="decision_variable_symbol">x</string>
 
-
     <string name="clear_icon">clear</string>
+    <string name="send_icon">send</string>
+
+    <string name="subject_to">Sujeto a</string>
     <string name="maximize">Maximizar</string>
     <string name="minimize">Minimizar</string>
     <string name="max">Max</string>
@@ -18,6 +20,7 @@
     <string name="add_restriction">Agregar Restriccion</string>
     <string name="restriction_contraction">Restriccion</string>
     <string name="objective_function_contraction">Fn. Objetivo</string>
+    <string name="model">Modelo</string>
     <string name="equalities_list_default">Igual a</string>
     <string-array name="equalities_list">
         <item> &lt; </item>

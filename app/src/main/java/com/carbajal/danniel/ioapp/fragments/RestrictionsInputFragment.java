@@ -49,7 +49,7 @@ public class RestrictionsInputFragment extends Fragment{
         // Inflate the layout for this fragment
         FrameLayout root = new FrameLayout(getActivity());
         if (savedInstanceState != null) {
-            restrictionsInputView = new RestrictionsInputView(getActivity(),index,savedInstanceState.getStringArray("coeficients"));
+            restrictionsInputView = new RestrictionsInputView(getActivity(),index);
             root.addView(restrictionsInputView);
         } else {
             restrictionsInputView = new RestrictionsInputView(getActivity(),index);
@@ -90,7 +90,7 @@ public class RestrictionsInputFragment extends Fragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArray("coeficients", restrictionsInputView.getCoeficients());
+//        outState.putStringArray("coeficients", restrictionsInputView.getCoeficients());
     }
 
     public interface onCaptureModelListener{

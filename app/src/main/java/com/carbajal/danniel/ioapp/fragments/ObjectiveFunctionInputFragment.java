@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 
 import com.carbajal.danniel.ioapp.R;
 import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
-import com.carbajal.danniel.ioapp.views.customViews.ModelInputAdapter;
+import com.carbajal.danniel.ioapp.views.output.CustomPagerAdapter;
 
 
 public class ObjectiveFunctionInputFragment extends Fragment{
 
     private onCaptureModelListener mListener;
-    private ModelInputAdapter modelInputAdapter;
+    private CustomPagerAdapter customPagerAdapter;
 
     public ObjectiveFunctionInputFragment() {
         // Required empty public constructor
@@ -30,7 +30,7 @@ public class ObjectiveFunctionInputFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        modelInputAdapter = new ModelInputAdapter(getContext());
+        customPagerAdapter = new CustomPagerAdapter(getContext());
     }
 
     @Override

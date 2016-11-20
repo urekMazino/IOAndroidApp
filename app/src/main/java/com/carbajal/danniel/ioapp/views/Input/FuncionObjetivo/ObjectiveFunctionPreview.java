@@ -3,9 +3,11 @@ package com.carbajal.danniel.ioapp.views.input.funcionObjetivo;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
 import com.carbajal.danniel.ioapp.R;
+import com.carbajal.danniel.ioapp.views.customViews.InputViews.BindableTextView;
 import com.carbajal.danniel.ioapp.views.input.Preview;
 
 /**
@@ -33,6 +35,16 @@ public class ObjectiveFunctionPreview extends Preview {
 
         addTextViewUntracked("Z = ");
     }
+
+    @Override
+    protected void updateEntireString() {
+        String string = maxMinToggle.getText()+" Z = ";
+        for (BindableTextView textView: textViews){
+            string = string + (textView.getText());
+        }
+        entireString.setValue(string);
+    }
+
     private void initToggle(){
         maxMinToggle = new ToggleButton(this.getContext());
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
@@ -41,7 +53,16 @@ public class ObjectiveFunctionPreview extends Preview {
         maxMinToggle.setTextOn(getResources().getString(R.string.max));
         maxMinToggle.setTextOff(getResources().getString(R.string.min));
         maxMinToggle.toggle();
+        maxMinToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                updateEntireString();
+            }
+        });
         addView(maxMinToggle);
+    }
+    public boolean getMinMaxBoolean(){
+        return maxMinToggle.isChecked();
     }
     @Override
     public void removeTextView(int index){

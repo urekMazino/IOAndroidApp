@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_pop"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.carbajal.danniel.ioapp.activities.ResultActivity">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <com.carbajal.danniel.ioapp.views.output.ResultViewPager
+            android:id="@+id/result_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </com.carbajal.danniel.ioapp.views.output.ResultViewPager>
+
+    </LinearLayout>
+</FrameLayout>

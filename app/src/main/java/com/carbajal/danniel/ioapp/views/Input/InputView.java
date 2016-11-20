@@ -1,9 +1,13 @@
 package com.carbajal.danniel.ioapp.views.input;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -16,10 +20,10 @@ import com.carbajal.danniel.ioapp.R;
 public class InputView extends FrameLayout {
 
     private ScrollView outerContainer;
-    private TextView titleTextView;
+    protected TextView titleTextView;
     protected LinearLayout titleContainer;
     protected LinearLayout innerContainer;
-    private LinearLayout bottomButtonContainer;
+    protected LinearLayout bottomButtonContainer;
     private Button captureButton;
 
     public InputView(Context context) {
@@ -45,13 +49,10 @@ public class InputView extends FrameLayout {
 
         initTitleBar();
         initBottomButtonContainer();
-        initCaptureButton();
-
 
     }
     private void initScrollView(){
         outerContainer = new ScrollView(getContext());
-
         ScrollView.LayoutParams layoutParams = new ScrollView.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
 
         int horizontalMargin = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
@@ -96,7 +97,14 @@ public class InputView extends FrameLayout {
     }
     private void initTitle(){
         titleTextView = new TextView(this.getContext());
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL|Gravity.LEFT;
+        titleTextView.setLayoutParams(layoutParams);
+        titleTextView.setGravity(Gravity.CENTER_VERTICAL);
+        titleTextView.setTypeface(Typeface.DEFAULT_BOLD);
         titleTextView.setText("Title");
+        titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
         titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,32);
     }
 
@@ -111,19 +119,27 @@ public class InputView extends FrameLayout {
         spacerLayoutParams.height = 0;
         spacerLayoutParams.weight = 1;
         spacer.setLayoutParams(spacerLayoutParams);
-
+        spacer.setBackgroundColor(Color.RED);
         bottomButtonContainer.addView(spacer);
 
         innerContainer.addView(bottomButtonContainer,innerContainer.getChildCount());
     }
-    private void initCaptureButton(){
-        captureButton = new Button(this.getContext());
-        captureButton.setText(getResources().getString(R.string.add_restriction));
-        //bottomButtonContainer.addView(captureButton);
+    public void addBottomButton(View view){
+        this.bottomButtonContainer.addView(view,bottomButtonContainer.getChildCount());
     }
+    protected void removeTitle(){
+        try {
+            innerContainer.removeView(titleContainer);
+        } catch(Exception e){
 
-    public void addContent(View view,int index){
-        innerContainer.addView(view,Math.min(Math.max(0,index),innerContainer.getChildCount()-2));
+        }
+    }
+    public void removeBottomButton(View view){
+        try {
+            this.bottomButtonContainer.removeView(view);
+        } catch (Exception e){
+
+        }
     }
     public void addContent(View view){
         innerContainer.addView(view,Math.max(0,innerContainer.getChildCount()-2));

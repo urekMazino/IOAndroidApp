@@ -1,19 +1,17 @@
 package com.carbajal.danniel.ioapp.views.customViews.InputViews;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.carbajal.danniel.ioapp.R;
 import com.carbajal.danniel.ioapp.support.BindableString;
-import com.carbajal.danniel.ioapp.views.customViews.CircularTextView;
 import com.carbajal.danniel.ioapp.support.StringManipulation;
+import com.carbajal.danniel.ioapp.views.customViews.CircularTextView;
+import com.carbajal.danniel.ioapp.views.customViews.FontButtonBuilder;
 
 
 /**
@@ -99,19 +97,7 @@ public class DecisionVariableField extends LinearLayout{
         setTextView(getResources().getString(R.string.decision_variable_symbol)+StringManipulation.subscript(index));
     }
     private CircularTextView createEliminateButton(){
-        final LayoutParams lparams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-        lparams.gravity=Gravity.CENTER;
-        lparams.leftMargin = 16;
-        CircularTextView eliminateButton = new CircularTextView(this.getContext());
-        eliminateButton.setText(getResources().getString(R.string.clear_icon));
-        eliminateButton.setTextSize(TypedValue.COMPLEX_UNIT_SP,28);
-        eliminateButton.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-        eliminateButton.setLayoutParams(lparams);
-        eliminateButton.setGravity(Gravity.CENTER);
-        eliminateButton.setSolidColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-        eliminateButton.setPadding(5,5,5,5);
-        Typeface typeFace=Typeface.createFromAsset(getContext().getAssets(),"fonts/MaterialIcons-Regular.ttf");
-        eliminateButton.setTypeface(typeFace);
+        CircularTextView eliminateButton = FontButtonBuilder.BuildCircularButton(getContext(),getResources().getString(R.string.clear_icon),28);
 
         return eliminateButton;
     }
