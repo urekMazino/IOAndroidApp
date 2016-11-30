@@ -3,7 +3,6 @@ package com.carbajal.danniel.ioapp.views.input;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -14,13 +13,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.carbajal.danniel.ioapp.R;
-import com.carbajal.danniel.ioapp.activities.ResultActivity;
+import com.carbajal.danniel.ioapp.activities.OutputActivities.ResultActivity;
+import com.carbajal.danniel.ioapp.activities.OutputActivities.ResultGraficoActivity;
 import com.carbajal.danniel.ioapp.models.programacionlineal.ModeloOptimizacionLinealImp;
 import com.carbajal.danniel.ioapp.views.customViews.FontButtonBuilder;
-import com.carbajal.danniel.ioapp.views.input.funcionObjetivo.ObjectiveFunctionInputView;
-import com.carbajal.danniel.ioapp.views.input.modelPreview.ModelPreviewView;
-import com.carbajal.danniel.ioapp.views.input.restrictions.RestrictionManager;
-import com.carbajal.danniel.ioapp.views.input.restrictions.RestrictionsInputView;
+import com.carbajal.danniel.ioapp.views.input.PL.funcionObjetivo.ObjectiveFunctionInputView;
+import com.carbajal.danniel.ioapp.views.input.PL.modelPreview.ModelPreviewView;
+import com.carbajal.danniel.ioapp.views.input.PL.restrictions.RestrictionManager;
+import com.carbajal.danniel.ioapp.views.input.PL.restrictions.RestrictionsInputView;
 import com.carbajal.danniel.ioapp.views.output.CustomPagerAdapter;
 
 /**
@@ -36,11 +36,13 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
     private boolean isPageChanged=false;
     private boolean closingRestriction = false;
     private RestrictionsInputView restrictionToClose;
-
+    private int maxVariables = Integer.MAX_VALUE;
     ObjectiveFunctionInputView objectiveFunctionInputView;
     private RestrictionManager restrictionManager = new RestrictionManager();
 
-    private TextView addRestrictionButton;
+    private RestrictionsInputView toAdd;
+    private TextView nextButton;
+    private TextView addResButton;
     private TextView sendButton;
 
     public ModelViewPager(Context context) {
@@ -62,6 +64,12 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
     private void initPager(){
 
     }
+
+    public void setMaxVariables(int maxVariables) {
+        this.maxVariables = maxVariables;
+        objectiveFunctionInputView.setMaxVariables(maxVariables);
+    }
+
     private void initPagerTitleStrip(){
         ViewPager.LayoutParams layoutParams = new ViewPager.LayoutParams();
         layoutParams.height = ViewPager.LayoutParams.WRAP_CONTENT;
@@ -70,7 +78,7 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
 
         PagerTitleStrip pagerTitleStrip = new PagerTitleStrip(getContext());
         pagerTitleStrip.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        pagerTitleStrip.setTextColor(Color.WHITE);
+        pagerTitleStrip.setTextColor(getResources().getColor(R.color.backgroundColor));
         float scale = getResources().getDisplayMetrics().density;
         int dpAsPixels = (int) (4*scale + 0.5f);
         pagerTitleStrip.setPadding(0,dpAsPixels,0,dpAsPixels);
@@ -96,10 +104,13 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
             public void onPageScrollStateChanged(int state) {
                 switch (state) {
                     case ViewPager.SCROLL_STATE_IDLE:
-                        if (isPageChanged && closingRestriction) {
-                            finishClosingRestriction();
-                            isPageChanged = false;
-                            closingRestriction=false;
+                        if (isPageChanged) {
+                            if (closingRestriction) {
+                                finishClosingRestriction();
+                                closingRestriction = false;
+                                isPageChanged = false;
+                            }
+                            finishChanging();
                         }
                         setPagingEnabled(true);
                         break;
@@ -114,9 +125,12 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
     private void initViews() {
         restrictionManager.addListener(this);
 
-        initAddButton();
+        nextButton = initNextButton();
+        TextView nextButtonFnObj = initNextButton();
+        addResButton = initAddButton();
         initSendButton();
         objectiveFunctionInputView = new ObjectiveFunctionInputView(getContext());
+        objectiveFunctionInputView.addBottomButton(nextButtonFnObj);
         customPagerAdapter.addViewGroup(objectiveFunctionInputView,"Funcion Objetivo");
         ModelPreviewView modelPreviewView= new ModelPreviewView(getContext(),objectiveFunctionInputView,restrictionManager);
         modelPreviewView.addBottomButton(sendButton);
@@ -153,7 +167,7 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
         }
 
         Activity host = (Activity) getContext();
-        Intent newIntent = new Intent(host,ResultActivity.class);
+        Intent newIntent = new Intent(host, ((maxVariables==2)?ResultGraficoActivity.class:ResultActivity.class));
         newIntent.putExtra("funcion_objetivo",modeloOptimizacionLinealImp.getFuncionObjetivo());
         newIntent.putParcelableArrayListExtra("restricciones",modeloOptimizacionLinealImp.getRestricciones());
         host.startActivity(newIntent);
@@ -164,28 +178,39 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
                     , objectiveFunctionInputView.getVariableCount()));
     }
 
-    private void initAddButton(){
-        addRestrictionButton = FontButtonBuilder.BuildCircularButton(getContext(),"add",40);
-        addRestrictionButton.setOnClickListener(new OnClickListener() {
+    private TextView initNextButton(){
+        TextView nextButton = FontButtonBuilder.BuildButton(getContext(),getResources().getString(R.string.send_icon),40);
+        nextButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                smoothTransition(getCurrentItem()+1);
+            }
+        });
+        return nextButton;
+    }
+    private TextView initAddButton(){
+        TextView button = FontButtonBuilder.BuildCircularButton(getContext(),getResources().getString(R.string.add_icon),32,getResources().getColor(R.color.green));
+        button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 addRestriction();
             }
         });
-
+        return button;
     }
-
     private void closeRestrictionPager(RestrictionsInputView restrictionInputView) throws Exception {
         if (restrictionManager.getCount()<=1){
             throw new Exception("No se puede tener menos de 1 restriccion");
         }
         removeRestrictionButton();
+        removeAddResButton();
         restrictionToClose = restrictionInputView;
         closingRestriction = true;
         int currentPosition = restrictionManager.getIndex(restrictionInputView);
         restrictionManager.remove(restrictionInputView);
         this.setCurrentItem(currentPosition,true);
         addRestrictionButtonToLast();
+        addAddResButtonToLast();
     }
     private void finishClosingRestriction(){
         closingRestriction = false;
@@ -196,11 +221,21 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
     private void addRestrictionButtonToLast(){
         restrictionManager.getRestrictionsInputViews()
                 .get(restrictionManager.getCount()-1)
-                .addBottomButton(addRestrictionButton);
+                .addBottomButton(nextButton);
     }
     private void removeRestrictionButton(){
         for (RestrictionsInputView x: restrictionManager.getRestrictionsInputViews()){
-            x.removeBottomButton(addRestrictionButton);
+            x.removeBottomButton(nextButton);
+        }
+    }
+    private void addAddResButtonToLast(){
+        restrictionManager.getRestrictionsInputViews()
+                .get(restrictionManager.getCount()-1)
+                .addTitleButton(addResButton);
+    }
+    private void removeAddResButton(){
+        for (RestrictionsInputView x: restrictionManager.getRestrictionsInputViews()){
+            x.removeTitleButton(addResButton);
         }
     }
 
@@ -221,13 +256,29 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
         customPagerAdapter.addViewGroup(restrictionsInputView,"Restriccion "+(customPagerAdapter.getCount()-1),customPagerAdapter.getCount()-1);
         removeRestrictionButton();
         addRestrictionButtonToLast();
-        this.setCurrentItem(restrictionManager.getCount(),true);
+        removeAddResButton();
+        addAddResButtonToLast();
+        toAdd = restrictionsInputView;
+        smoothTransition(restrictionManager.getCount());
+    }
+
+    private void smoothTransition(int index){
+        this.setCurrentItem(index,true);
         setPagingEnabled(false);
     }
 
     @Override
     public void requestAdd() {
         addRestriction();
+    }
+
+    @Override
+    public void requestChangePage(int i) {
+        nextPage();
+    }
+
+    public void nextPage(){
+        smoothTransition(getCurrentItem()+1);
     }
 
     @Override
@@ -250,5 +301,12 @@ public class ModelViewPager extends ViewPager implements RestrictionManager.Rest
 
     public void setPagingEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void finishChanging() {
+        if (toAdd!=null){
+            toAdd.focusFirst();
+            toAdd = null;
+        }
     }
 }

@@ -32,7 +32,11 @@ public class CustomNumField extends EditText {
         setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
         setSelectAllOnFocus(true);
     }
-    public double getValue() throws Exception{
-        return Double.parseDouble(getText().toString());
+    public double getValue(){
+        try {
+            return Double.parseDouble(getText().toString());
+        } catch (Exception e){
+            return 0;
+        }
     }
 }

@@ -28,6 +28,7 @@ public class Restriccion implements Parcelable{
 	protected Restriccion(Parcel in) {
 		expresionNumerica = in.readDouble();
 		variablesDecision = (ArrayList<Double>)in.readSerializable();
+		_igualdad = (TiposIgualdades)in.readSerializable();
 	}
 
 	public static final Creator<Restriccion> CREATOR = new Creator<Restriccion>() {
@@ -86,10 +87,15 @@ public class Restriccion implements Parcelable{
         String functionPreviewStr = "";
         int i = 1;
         for (double x : variablesDecision) {
-            functionPreviewStr += StringManipulation.coeficientToVariable(x,i);
-            i++;
+			if (x!=0) {
+				if (functionPreviewStr.length()==0)
+					functionPreviewStr += StringManipulation.firstCoeficientToVariable(x, i);
+				else
+					functionPreviewStr += StringManipulation.coeficientToVariable(x, i);
+			}
+			i++;
         }
-        functionPreviewStr += " = "+ expresionNumerica;
+        functionPreviewStr += " "+getIgualdadString()+" "+ expresionNumerica;
         return functionPreviewStr;
     }
 
@@ -102,5 +108,30 @@ public class Restriccion implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeDouble(expresionNumerica);
 		dest.writeSerializable(variablesDecision);
+		dest.writeSerializable(_igualdad);
+	}
+
+	public String getIgualdadString(){
+		String toReturn = "";
+		switch (_igualdad){
+			case MENOR:
+				toReturn = "<";
+				break;
+			case MENOR_IGUAL:
+				toReturn = "≤";
+				break;
+			case IGUAL:
+				toReturn = "=";
+				break;
+			case MAYOR_IGUAL:
+				toReturn = "≥";
+				break;
+			case MAYOR:
+				toReturn = ">";
+				break;
+
+		}
+		return toReturn;
+
 	}
 }

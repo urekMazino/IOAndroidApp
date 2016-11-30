@@ -1,5 +1,7 @@
 package com.carbajal.danniel.ioapp.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -10,18 +12,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.carbajal.danniel.ioapp.R;
-import com.carbajal.danniel.ioapp.fragments.ObjectiveFunctionInputFragment;
-import com.carbajal.danniel.ioapp.fragments.RestrictionsInputFragment;
+import com.carbajal.danniel.ioapp.activities.InputActivities.GraficoInputActivity;
+import com.carbajal.danniel.ioapp.activities.InputActivities.SimplexInputActivity;
+import com.carbajal.danniel.ioapp.activities.InputActivities.TransportInputActivity;
+import com.carbajal.danniel.ioapp.fragments.ModelInputFragment;
 import com.carbajal.danniel.ioapp.models.programacionlineal.FuncionObjetivo;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ObjectiveFunctionInputFragment.onCaptureModelListener,
-        RestrictionsInputFragment.onCaptureModelListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        ModelInputFragment.onCaptureModelListener{
 
     private Toolbar toolbar;
-    FuncionObjetivo funcionObjetivo;
+    private FuncionObjetivo funcionObjetivo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +38,8 @@ public class MainActivity extends AppCompatActivity
         initDrawer();
 
         initNavigations();
-
     }
+
     private  void initDrawer(){
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -55,8 +60,9 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            //super.onBackPressed();
         }
+
     }
 
     @Override
@@ -68,36 +74,26 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.Simplex){
-            toolbar.setTitle("Simplex");
-
-            ObjectiveFunctionInputFragment funcionObjetivoInputFragment = new ObjectiveFunctionInputFragment();
-            android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, funcionObjetivoInputFragment);
-            fragmentTransaction.commit();
+            Activity host = this;
+            Intent newIntent = new Intent(host, SimplexInputActivity.class);
+            host.startActivity(newIntent);
         } else if (id == R.id.Grafico) {
-
+            Activity host = this;
+            Intent newIntent = new Intent(host, GraficoInputActivity.class);
+            host.startActivity(newIntent);
 
         } else if (id == R.id.ESN) {
-
+            Activity host = this;
+            Intent newIntent = new Intent(host, TransportInputActivity.class);
+            host.startActivity(newIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -105,12 +101,37 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void onClick(View view) {
+        Log.v("ok","yes");
+        int id = view.getId();
+        if (id == R.id.Simplex){
+            Activity host = this;
+            Intent newIntent = new Intent(host, SimplexInputActivity.class);
+            host.startActivity(newIntent);
+        } else if (id == R.id.Grafico) {
+            Activity host = this;
+            Intent newIntent = new Intent(host, GraficoInputActivity.class);
+            host.startActivity(newIntent);
+
+        } else if (id == R.id.ESN) {
+            Activity host = this;
+            Intent newIntent = new Intent(host, TransportInputActivity.class);
+            host.startActivity(newIntent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+    }
 
     @Override
     public void onCaptureModel(FuncionObjetivo funcionObjetivoa) {
         this.funcionObjetivo = funcionObjetivoa;
-        Log.v("funcion objetivo", funcionObjetivoa.getVariablesRestriccion().toString());
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
 }

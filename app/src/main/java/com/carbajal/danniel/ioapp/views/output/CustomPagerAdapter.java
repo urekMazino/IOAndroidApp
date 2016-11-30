@@ -36,6 +36,9 @@ public class CustomPagerAdapter extends PagerAdapter {
         notifyDataSetChanged();
         return position;
     }
+    public ViewGroup getViewGroup(int index){
+        return roots.get(index);
+    }
 
     public int removeView (ViewPager pager, View v)
     {

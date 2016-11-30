@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
         <item
             android:id="@+id/Simplex"
-            android:title="Simplex" />
+            android:title="@string/Simplex" />
         <item
             android:id="@+id/Grafico"
-            android:title="Grafico" />
-    </group>
+            android:title="@string/Graphical" />
+
 
     <item android:title="Transporte">
         <menu>
             <item
                 android:id="@+id/ESN"
-                android:title="Esquina superior noroeste" />
+                android:title="@string/NorthwestCorner" />
         </menu>
     </item>
 

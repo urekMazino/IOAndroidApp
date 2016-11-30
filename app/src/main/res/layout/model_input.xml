@@ -2,13 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.carbajal.danniel.ioapp.fragments.ObjectiveFunctionInputFragment">
+    tools:context="com.carbajal.danniel.ioapp.fragments.ModelInputFragment">
 
-    <com.carbajal.danniel.ioapp.views.input.funcionObjetivo.ObjectiveFunctionInputView
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-
-    </com.carbajal.danniel.ioapp.views.input.funcionObjetivo.ObjectiveFunctionInputView>
+        android:layout_height="match_parent"></RelativeLayout>
 
 </FrameLayout>

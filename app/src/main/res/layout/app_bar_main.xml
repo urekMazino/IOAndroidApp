@@ -26,12 +26,54 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/fragment_container"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </LinearLayout>
+
+            <TextView
+                android:text="Equipo:"
+                android:textSize="40sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="27dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:text="Investigacion de Operaciones"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:id="@+id/textView4"
+                android:layout_below="@+id/textView3"
+                android:layout_alignStart="@+id/textView3" />
+
+            <TextView
+                android:text="Materia:"
+                android:textSize="40sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:id="@+id/textView3"
+                android:layout_below="@+id/textView2"
+                android:layout_alignStart="@+id/textView2" />
+
+            <TextView
+                android:text="Carbajal Escamilla Daniel\nAvila Rivera Erick Ramiro"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:id="@+id/textView2"
+                android:layout_below="@+id/textView"
+                android:layout_alignStart="@+id/textView" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 

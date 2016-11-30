@@ -8,23 +8,23 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.carbajal.danniel.ioapp.R;
 
 
-public class InputView extends FrameLayout {
+public class InputView extends FrameLayout{
 
+    private RelativeLayout relativeLayout;
     private ScrollView outerContainer;
     protected TextView titleTextView;
     protected LinearLayout titleContainer;
     protected LinearLayout innerContainer;
     protected LinearLayout bottomButtonContainer;
-    private Button captureButton;
 
     public InputView(Context context) {
         super(context);
@@ -44,6 +44,7 @@ public class InputView extends FrameLayout {
 
 
     private void init(){
+        initRelativeLayout();
         initScrollView();
         initInnerContainer();
 
@@ -51,9 +52,10 @@ public class InputView extends FrameLayout {
         initBottomButtonContainer();
 
     }
-    private void initScrollView(){
-        outerContainer = new ScrollView(getContext());
-        ScrollView.LayoutParams layoutParams = new ScrollView.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+
+    private void initRelativeLayout(){
+        relativeLayout = new RelativeLayout(getContext());
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT);
 
         int horizontalMargin = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
         int verticalMargin = getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin);
@@ -63,10 +65,16 @@ public class InputView extends FrameLayout {
                 horizontalMargin,
                 verticalMargin);
 
+        relativeLayout.setLayoutParams(layoutParams);
+        this.addView(relativeLayout);
+    }
+    private void initScrollView(){
+        outerContainer = new ScrollView(getContext());
+        ScrollView.LayoutParams layoutParams = new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT,ScrollView.LayoutParams.MATCH_PARENT);
         outerContainer.setLayoutParams(layoutParams);
-
         outerContainer.setFillViewport(true);
-        this.addView(outerContainer);
+
+        relativeLayout.addView(outerContainer);
     }
     private  void initInnerContainer(){
         innerContainer = new LinearLayout(getContext());
@@ -89,6 +97,10 @@ public class InputView extends FrameLayout {
     }
     private void initTitleBar(){
         titleContainer = new LinearLayout(getContext());
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            layoutParams.setMargins(0,0,0,(int)getResources().getDimension(R.dimen.activity_vertical_margin));
+        titleContainer.setLayoutParams(layoutParams);
         titleContainer.setOrientation(LinearLayout.HORIZONTAL);
         initTitle();
         titleContainer.addView(titleTextView);
@@ -124,28 +136,29 @@ public class InputView extends FrameLayout {
 
         innerContainer.addView(bottomButtonContainer,innerContainer.getChildCount());
     }
-    public void addBottomButton(View view){
-        this.bottomButtonContainer.addView(view,bottomButtonContainer.getChildCount());
-    }
-    protected void removeTitle(){
-        try {
-            innerContainer.removeView(titleContainer);
-        } catch(Exception e){
-
-        }
+    public void addBottomButton(TextView view){
+        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        relativeParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        relativeParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        relativeLayout.addView(view,relativeParams);
     }
     public void removeBottomButton(View view){
         try {
-            this.bottomButtonContainer.removeView(view);
+            this.relativeLayout.removeView(view);
+        } catch (Exception e){
+
+        }
+    }
+    public void removeTitleButton(View view){
+        try {
+            this.titleContainer.removeView(view);
         } catch (Exception e){
 
         }
     }
     public void addContent(View view){
         innerContainer.addView(view,Math.max(0,innerContainer.getChildCount()-2));
-    }
-    public Button getCaptureButton(){
-        return captureButton;
     }
     public TextView getTitle(){
         return titleTextView;

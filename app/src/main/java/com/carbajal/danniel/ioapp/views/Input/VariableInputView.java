@@ -11,8 +11,9 @@ import android.widget.TextView;
 
 import com.carbajal.danniel.ioapp.R;
 import com.carbajal.danniel.ioapp.support.BindableString;
+import com.carbajal.danniel.ioapp.views.customViews.FontButtonBuilder;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.CustomNumField;
-import com.carbajal.danniel.ioapp.views.customViews.InputViews.DecisionVariableField;
+import com.carbajal.danniel.ioapp.views.input.PL.DecisionVariableField;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.FlowLayout;
 
 import java.util.ArrayList;
@@ -23,11 +24,11 @@ import java.util.ArrayList;
 
 public class VariableInputView extends FlowLayout{
 
-
-    private boolean canAddVariables = true;
-    private boolean canRemoveVariables = true;
+    private int minFields = 1;
+        private boolean canRemoveVariables = true;
     private ArrayList<DecisionVariableField> decisionVariableFields = new ArrayList<>();
     private variableInputChange listener;
+    private TextView addButton;
 
     public VariableInputView(Context context,String[] coeficients,variableInputChange listener) {
         super(context);
@@ -53,9 +54,25 @@ public class VariableInputView extends FlowLayout{
         init(array);
     }
     void init(String[] coeficients){
+        initAddButton();
         for (String x:coeficients){
             addField(x);
         }
+    }
+
+    public void setMinFields(int minFields) {
+        this.minFields = minFields;
+    }
+
+    public void initAddButton(){
+        TextView button = FontButtonBuilder.BuildCircularButton(getContext(),getResources().getString(R.string.add_icon),30,getResources().getColor(R.color.green));
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifyFinish();
+            }
+        });
+        addButton = button;
     }
     public void addField(){
         addField("1");
@@ -65,22 +82,25 @@ public class VariableInputView extends FlowLayout{
         final DecisionVariableField decisionVariableField = new DecisionVariableField(this.getContext(), decisionVariableFields.size()+1,coeficient);
 
         final CustomNumField numField = decisionVariableField.getNumField();
-        numField.requestFocus();
-        numField.selectAll();
         createNumFieldListener(numField);
 
         if (canRemoveVariables) {
             createEliminateButtonListener(decisionVariableField);
+            if (decisionVariableFields.size()>0)
+                decisionVariableFields.get(decisionVariableFields.size()-1).removeButton(addButton);
+            decisionVariableField.addButton(addButton);
         } else {
             decisionVariableField.removeEliminateButton();
         }
+
         decisionVariableFields.add(decisionVariableField);
         this.addView(decisionVariableField);
 
         decisionVariableField.updateVariableString();
         notifyFieldAdded(decisionVariableField.getVariableString());
+        numField.requestFocus();
+        numField.selectAll();
     }
-
     private void createNumFieldListener(final CustomNumField numField){
 
         numField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -112,26 +132,35 @@ public class VariableInputView extends FlowLayout{
 
     public void removeField(DecisionVariableField v) throws Exception{
 
-        if (decisionVariableFields.size()>1) {
+        if (decisionVariableFields.size()>minFields) {
             notifyFieldRemoved(v.getIndex());
+            adjustButton(v.getIndex()-1);
             removeContainer(v);
             adjustNames();
+            decisionVariableFields.get(decisionVariableFields.size()-1).getNumField().requestFocus();
         } else {
             Log.v((getResources().getString(R.string.minimum_variables_message)+"se tiene solamente "+decisionVariableFields.size()),"wtf");
             throw new Exception(getResources().getString(R.string.minimum_variables_message)+"se tiene solamente "+decisionVariableFields.size());
         }
     }
     public void removeField(int indice) throws Exception{
-        if (decisionVariableFields.size()>1) {
+        if (decisionVariableFields.size()>minFields) {
             notifyFieldRemoved(indice);
+            adjustButton(indice);
             removeContainer(indice);
             adjustNames();
+            decisionVariableFields.get(decisionVariableFields.size()-1).getNumField().requestFocus();
         } else {
             Log.v((getResources().getString(R.string.minimum_variables_message)+"se tiene solamente "+decisionVariableFields.size()),"wtf");
             throw new Exception(getResources().getString(R.string.minimum_variables_message)+"se tiene solamente "+decisionVariableFields.size());
         }
     }
-
+    private void adjustButton(int indice){
+        if (canRemoveVariables && indice==decisionVariableFields.size()-1) {
+            decisionVariableFields.get(decisionVariableFields.size() - 1).removeButton(addButton);
+            decisionVariableFields.get(decisionVariableFields.size() - 2).addButton(addButton);
+        }
+    }
     private void adjustNames(){
         int index=1;
         for (DecisionVariableField decisionVariableField : decisionVariableFields){
@@ -156,6 +185,7 @@ public class VariableInputView extends FlowLayout{
 
     public void setCanRemoveVariables(boolean canRemoveVariables) {
         this.canRemoveVariables = canRemoveVariables;
+        decisionVariableFields.get(decisionVariableFields.size() - 1).removeButton(addButton);
         if (canRemoveVariables == false) {
             for (DecisionVariableField decisionVariableField : decisionVariableFields) {
                 decisionVariableField.removeEliminateButton();
@@ -170,7 +200,6 @@ public class VariableInputView extends FlowLayout{
     }
     private void notifyFinish(){
         if(listener != null){
-            Log.v("first level","confirmed");
             listener.finishInputs();
         }
     }
@@ -184,7 +213,7 @@ public class VariableInputView extends FlowLayout{
         return decisionVariableFields;
     }
 
-    public interface variableInputChange {
+    public interface    variableInputChange {
         void addedField(BindableString bindableString);
         void removedField(int index);
         void finishInputs();

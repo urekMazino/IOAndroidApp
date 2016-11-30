@@ -33,14 +33,26 @@ public abstract class StringManipulation {
         if (Math.abs(coeficient) == 1) {
             resultingString = (coeficient > 0 ? ((i!=1)?" + ":""): " - " ) + "x" + index;
         } else if (coeficient >= 0) {
-
             resultingString = ((i!=1)?" + ":"") + resultingString;
-
         } else {
             resultingString = " - " + resultingString;
         }
         return resultingString;
         
+    }
+    public static String firstCoeficientToVariable(double coeficient,int i){
+        i = Math.max(i,1);
+        String index = StringManipulation.subscript(i);
+        String resultingString = DoubleToString(Math.abs(coeficient)) + "x" + index;
+
+        if (Math.abs(coeficient) == 1) {
+            resultingString = (coeficient > 0 ? "": " - " ) + "x" + index;
+        } else if (coeficient >= 0) {
+            resultingString = ""+ resultingString;
+        } else {
+            resultingString = " - " + resultingString;
+        }
+        return resultingString;
     }
     public static  String DoubleToString(double value){
         NumberFormat nf = new DecimalFormat("##.###");

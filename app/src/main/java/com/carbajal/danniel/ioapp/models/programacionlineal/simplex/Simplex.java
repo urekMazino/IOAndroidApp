@@ -16,6 +16,7 @@ import java.util.HashMap;
 public class Simplex{
 
 
+	private boolean originalMin = false;
 	private ModeloOptimizacionLinealImp modeloOptimizacionLinealImp;
 	private double[][] tablaSimplex;
     private String[] rowNames;
@@ -28,6 +29,30 @@ public class Simplex{
 		this.listener = listener;
 		checkMinMax();
 		FuncionObjetivoEstandar();
+	}
+
+	public void ejecutarAlgoritmo(){
+		if (modeloOptimizacionLinealImp == null){
+			return;
+		}
+		CrearTablaSimplex();
+		setNames();
+		listener.initialTable(tablaSimplex,rowNames);
+		int columnaEntrada,renglonSalida;
+		do{
+			columnaEntrada = TablaAnalisis.buscarColumnaEntrada(tablaSimplex);
+			if (columnaEntrada<0){
+				break;
+			}
+			renglonSalida = TablaAnalisis.buscarRenglonSalida(tablaSimplex, columnaEntrada);
+			TablaModificador.renglonSobreElementoPivote(tablaSimplex[renglonSalida], tablaSimplex[renglonSalida][columnaEntrada]);
+			TablaModificador.eliminarElementosVerticalesAPivote(tablaSimplex, renglonSalida, columnaEntrada);
+
+			cambiarRenglonPorColumna(columnaEntrada,renglonSalida);
+
+			listener.iterationEnd(tablaSimplex,rowNames);
+		}while(true);
+		listener.result((originalMin)?generarSolucionMin():generarSolucion());
 	}
 
     private void setNames(){
@@ -47,7 +72,6 @@ public class Simplex{
 			columnNames[i] = "x"+ StringManipulation.subscript(i);
 			rowReference.put(columnNames[i],-1);
 		}
-		Log.v("colunas", rowReference.toString());
     }
 	private void FuncionObjetivoEstandar(){
 		ArrayList<Double> variablesRestriccion = modeloOptimizacionLinealImp.getFuncionObjetivo().getVariablesRestriccion();
@@ -61,33 +85,10 @@ public class Simplex{
 		if (!modeloOptimizacionLinealImp.getFuncionObjetivo().getMaximizar()){
 			modeloOptimizacionLinealImp = LPDuality.DualModel(modeloOptimizacionLinealImp);
 			listener.transposed(modeloOptimizacionLinealImp);
+			originalMin = true;
 		}
 	}
-	public void algoritmoSimplex(){
-		if (modeloOptimizacionLinealImp == null){
-			return;
-		}
-		CrearTablaSimplex();
-        setNames();
-		imprimirTablaSimplex();
-		listener.initialTable(tablaSimplex,rowNames);
-		int columnaEntrada,renglonSalida;
-		do{
-			columnaEntrada = TablaAnalisis.buscarColumnaEntrada(tablaSimplex);
-			if (columnaEntrada<0){
-				break;
-			}
-			renglonSalida = TablaAnalisis.buscarRenglonSalida(tablaSimplex, columnaEntrada);
-			TablaModificador.renglonSobreElementoPivote(tablaSimplex[renglonSalida], tablaSimplex[renglonSalida][columnaEntrada]);
-			TablaModificador.eliminarElementosVerticalesAPivote(tablaSimplex, renglonSalida, columnaEntrada);
 
-			cambiarRenglonPorColumna(columnaEntrada,renglonSalida);
-
-            listener.iterationEnd(tablaSimplex,rowNames);
-			imprimirTablaSimplex();
-		}while(true);
-		listener.result(generarSolucion());
-	}
 
 	public String[] generarSolucion(){
 		String[] soluciones = new String[tablaSimplex[0].length+1];
@@ -98,9 +99,26 @@ public class Simplex{
 		for (int i=1;i<=numVariables;i++){
 			soluciones[index++] = getResultString("x"+ StringManipulation.subscript(i));
 		}
-		for (int i=1;i<numRestricciones;i++){
+		for (int i=1;i<=numRestricciones;i++){
 			soluciones[index++] = getResultString("h"+ StringManipulation.subscript(i));
 		}
+		return soluciones;
+	}
+
+	public String[] generarSolucionMin(){
+		String[] soluciones = new String[tablaSimplex[0].length];
+        NumberFormat nf = new DecimalFormat("##.######");
+		int index=1;
+		int numRestricciones = modeloOptimizacionLinealImp.getRestricciones().size();
+		int numVariables = modeloOptimizacionLinealImp.getFuncionObjetivo().getVariablesRestriccion().size();
+		for (int i=numVariables;i<numVariables+numRestricciones;i++){
+			soluciones[i-numVariables+1] = "x"+ StringManipulation.subscript(index++)+"* = "+nf.format(tablaSimplex[0][i]);
+		}
+		index = 1;
+		for (int i=0;i<numVariables;i++){
+			soluciones[i+numVariables] = "h"+ StringManipulation.subscript(index++)+"* = "+nf.format(tablaSimplex[0][i]);
+		}
+		soluciones[0] = "Z* = "+nf.format(tablaSimplex[0][tablaSimplex[0].length-1]);
 		return soluciones;
 	}
 	private String getResultString(String str){
@@ -139,6 +157,7 @@ public class Simplex{
 			System.out.println();
 		}
 		System.out.println();
+		Log.v("","");
 	}
 	public void setListener(Events listener){
 		this.listener = listener;
@@ -147,7 +166,7 @@ public class Simplex{
 	public interface Events{
 		void iterationEnd(double[][] tablaSimplex,String[] rowNames);
 		void initialTable(double[][] tablaSimplex,String[] rowNames);
-		void result(String[] resultss);
+		void result(String[] results);
 		void transposed(ModeloOptimizacionLinealImp modeloNuevo);
 		void standarized(ModeloOptimizacionLinealImp modeloNuevo);
 	}

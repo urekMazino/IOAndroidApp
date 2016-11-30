@@ -18,7 +18,7 @@ import android.widget.ToggleButton;
 import com.carbajal.danniel.ioapp.R;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.CustomNumField;
 import com.carbajal.danniel.ioapp.views.customViews.InputViews.FlowLayout;
-import com.carbajal.danniel.ioapp.views.customViews.InputViews.DecisionVariableField;
+import com.carbajal.danniel.ioapp.views.input.PL.DecisionVariableField;
 import com.carbajal.danniel.ioapp.support.StringManipulation;
 
 import java.util.ArrayList;

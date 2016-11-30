@@ -9,8 +9,13 @@
     <string name="minimum_variables_message">No se puede tener menos de 1 variable de decision</string>
     <string name="decision_variable_symbol">x</string>
 
+    <!--MENUS-->
+    <string name="home">Inicio</string>
+
+    <!-- ICONOS -->
     <string name="clear_icon">clear</string>
     <string name="send_icon">send</string>
+    <string name="add_icon">add</string>
 
     <string name="subject_to">Sujeto a</string>
     <string name="maximize">Maximizar</string>
@@ -24,11 +29,20 @@
     <string name="equalities_list_default">Igual a</string>
     <string-array name="equalities_list">
         <item> &lt; </item>
-        <item>	≤</item>
+        <item> ≤ </item>
         <item> = </item>
         <item> ≥ </item>
         <item> &gt; </item>
 
     </string-array>
+
+
+    <!-- NOMBRES DE METODOS-->
+    <string name="Simplex">Simplex</string>
+    <string name="Graphical">Grafico</string>
+    <string name="NorthwestCorner">Esquina Superior Noroeste</string>
+
+    <!--OUTPUT NORTHWEST CORNER-->
+
 
 </resources>

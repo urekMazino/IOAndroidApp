@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="36dp">
+
+    <TextView
+        android:id="@+id/Simplex"
+        android:textColor="@color/backgroundColor"
+        android:textSize="26dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="@string/Simplex"
+        android:layout_marginBottom="22dp"/>
+
+    <TextView
+        android:id="@+id/Grafico"
+        android:textColor="@color/backgroundColor"
+        android:textSize="26dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="@string/Graphical"
+        android:layout_marginBottom="22dp"/>
+
+
+    <TextView
+        android:id="@+id/ESN"
+        android:textColor="@color/backgroundColor"
+        android:textSize="26dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="@string/NorthwestCorner"
+        android:layout_marginBottom="22dp"/>
+
+
+
+</LinearLayout>
